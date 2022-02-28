@@ -1,7 +1,8 @@
 import axios from 'axios'
 import { useQuery } from 'react-query'
+import { Link } from 'react-router-dom'
 
-type Repository = {
+export type Repository = {
   full_name: string
   description: string
 }
@@ -12,7 +13,7 @@ export function Repos() {
 
     return response.data
   }, {
-    refetchOnWindowFocus: true,
+      staleTime: 1000 * 60, // guardar os dados anteriores por um tempo determinado
   })
 
   return (
@@ -21,7 +22,9 @@ export function Repos() {
       {data?.map(repo => {
         return (
           <li key={repo.full_name}>
-            <strong>{repo.full_name}</strong>
+              <Link to={`repos/${repo.full_name}`}>
+                <strong>{repo.full_name}</strong>
+              </Link>
             <p>{repo.description}</p>
           </li>
         )

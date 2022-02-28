@@ -1,31 +1,37 @@
-import axios from 'axios'
-import { useQuery } from 'react-query'
-
-type Repository = {
-  full_name: string
-  description: string
-}
+import { useQueryClient } from 'react-query';
+import { useParams } from 'react-router-dom'
+import { Repository } from './Repos';
 
 export function Repo() {
-  const { data, isFetching } = useQuery<Repository[]>('repos', async () => {
-    const response = await axios.get('https://api.github.com/users/diego3g/repos')
+    const params = useParams()
+    const currentRepository = params['*'] as string;
 
-    return response.data
-  }, {
-    refetchOnWindowFocus: true,
-  })
+    const queryClient = useQueryClient()
 
-  return (
-    <ul>
-      { isFetching && <p>Carregando...</p> }
-      {data?.map(repo => {
-        return (
-          <li key={repo.full_name}>
-            <strong>{repo.full_name}</strong>
-            <p>{repo.description}</p>
-          </li>
-        )
-      })}
-    </ul>
-  )
+    async function handleChangeRepositoryDescription() {
+        // chamada API para atualizar a descrição do repositório
+
+        const previousrepos = queryClient.getQueryData<Repository[]>(['repos'])
+
+        if (previousrepos) {
+            const nextRepos = previousrepos.map(repo => {
+                if(repo.full_name === currentRepository ) {
+                    return { ...repo, description: 'testando' }
+                }else {
+                    return repo
+                }
+            })
+
+            queryClient.setQueryData('repos', nextRepos)
+        }
+
+
+    }
+
+    return (
+        <div>
+            <h1>{currentRepository}</h1>
+            <button onClick={handleChangeRepositoryDescription}>Alterar descrição</button>
+        </div>
+    )
 }
