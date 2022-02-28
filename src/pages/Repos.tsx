@@ -6,7 +6,7 @@ type Repository = {
   description: string
 }
 
-function App() {
+export function Repos() {
   const { data, isFetching } = useQuery<Repository[]>('repos', async () => {
     const response = await axios.get('https://api.github.com/users/diego3g/repos')
 
@@ -29,5 +29,3 @@ function App() {
     </ul>
   )
 }
-
-export default App
